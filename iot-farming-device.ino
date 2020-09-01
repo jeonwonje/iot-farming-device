@@ -34,7 +34,7 @@ void setup()
 {
 	Serial.begin(9600);
 	pinMode(4, OUTPUT); // Controlling relay requires output at D4
-	WiFi.config(preferredIp);
+	WiFi.config(ip);
 	while (status != WL_CONNECTED)
 	{
 		Serial.print("Attempting to connect to Network named: ");
@@ -166,7 +166,7 @@ void runServer()
 						client.print("Click <a href=\"/A\">here</a> to toggle the pump between auto and manual<br>");
 						client.print("The pump is currently set to: " + pumpStatus + "<br>");
 						client.print("Click <a href=\"/B\">here</a> to water the plant<br>");
-						client.print("Soil threshold is currenly: " + soilThreshold + ". Take note that 700 is humid, and 300 is dry.");
+						client.print("Soil threshold is currenly: " + String(soilThreshold) + ". Take note that 700 is humid, and 300 is dry.");
 						client.print("<a href=\"/C\">Increase</a> moisture threshold by 25<br>");
 						client.print("<a href=\"/D\">Decrease</a> moisture threshold by 25<br>");
 						client.println();
