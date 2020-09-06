@@ -4,8 +4,7 @@
 
 int status = WL_IDLE_STATUS;
 int interval = 15 * 1000; // Convert s to milliseconds
-int plant_height, moisture_1hr, moisture_4hr, moisture_24hr, moistureLevel;
-int soilThreshold = 300; // Wet soil 700, Dry soil 300, see https://wiki.seeedstudio.com/Grove-Moisture_Sensor/
+int soilThreshold = 300;  // Wet soil 700, Dry soil 300, see https://wiki.seeedstudio.com/Grove-Moisture_Sensor/
 int moisturePin = A0;
 long previousMillis = 0;
 
@@ -24,7 +23,7 @@ const int numReadings = 10;
 int readings[numReadings]; // the readings from the analog input
 int readIndex = 0;		   // the index of the current reading
 int total = 0;			   // the running total
-int average = 0;		   // the average
+int average = 300;		   // the average
 
 WiFiServer server(80);
 WiFiClient client(80);
@@ -59,10 +58,10 @@ void loop()
 		IPAddress ip = WiFi.localIP();
 		Serial.print("IP Address: ");
 		Serial.println(ip);
-		thingPost();
+		thingPost();										 // Send data to ThingSpeak
 		if (average < soilThreshold && pumpStatus == "auto") // If water level is low, and pump is set to run automatically
 		{
-			sendMessage();
+			sendMessage(); // Send message to IFTTT
 		}
 		else
 		{
@@ -115,7 +114,7 @@ void thingPost()
 	}
 	else
 	{
-		Serial.println("Water pump is malfunctioning OR Initial setup is running!");
+		Serial.println("Water pump is malfunctioning!");
 	}
 }
 
@@ -163,12 +162,16 @@ void runServer()
 						client.println("Content-type:text/html");
 						client.println();
 						// the content of the HTTP response follows the header:
+						client.print("<head><style> * {font-family: Verdana; font-size: 30px;}</style></head>");
 						client.print("Click <a href=\"/A\">here</a> to toggle the pump between auto and manual<br>");
 						client.print("The pump is currently set to: " + pumpStatus + "<br>");
 						client.print("Click <a href=\"/B\">here</a> to water the plant<br>");
 						client.print("Soil threshold is currenly: " + String(soilThreshold) + ". Take note that 700 is humid, and 300 is dry.");
 						client.print("<a href=\"/C\">Increase</a> moisture threshold by 25<br>");
 						client.print("<a href=\"/D\">Decrease</a> moisture threshold by 25<br>");
+						client.print("<iframe width='450' height='260' style='border: 1px solid #cccccc;' src='thingspeak.com/channels/1084861/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=5760&title=Soil+Moisture+Level+%2824Hr%29&type=line'></iframe>");
+						client.print("<iframe width='450' height='260' style='border: 1px solid #cccccc;' src='thingspeak.com/channels/1084861/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=960&title=Soil+Moisture+Level+%284Hr%29&type=line&xaxis=Time'></iframe>");
+						client.print("<iframe width='450' height='260' style='border: 1px solid #cccccc;' src='thingspeak.com/channels/1084861/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=5760&title=Soil+Moisture+Level+%2824Hr%29&type=line'></iframe>");
 						client.println();
 						break;
 					}
