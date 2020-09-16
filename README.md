@@ -13,3 +13,7 @@ Features:
 
 Hardware used:
 - Arduino MKR1000
+- Water pump
+- Electromagnetic relay
+- Moisture sensor
+- Grove platform
